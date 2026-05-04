@@ -1,17 +1,20 @@
-name: Build and Release MC Mod
+name: Build and Conditional Release
 
 on:
   push:
     tags:
-      - 'v*'            # 推送如 v1.0.0 的 tag 时触发
-  workflow_dispatch:      # 允许手动触发
+      - 'v*'               # 推送 v 开头的 tag 时触发
+  workflow_dispatch:        # 允许手动运行（此时没有 tag）
 
 permissions:
-  contents: write        # 用于创建 Release 和上传文件
+  contents: write           # 创建 Release 需要
+  actions: read             # 下载 artifact 可能需要
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      mod_version: ${{ steps.version.outputs.mod_version }}  # 传递给后续 job（如有需要）
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,17 +26,32 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3   # 自动缓存依赖，加速构建
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Read mod version from gradle.properties
+        id: version
+        run: |
+          MOD_VERSION=$(grep '^mod_version=' gradle.properties | cut -d'=' -f2 | tr -d '\r')
+          echo "mod_version=$MOD_VERSION" >> $GITHUB_OUTPUT
+          echo "Mod version: $MOD_VERSION"
 
       - name: Build with Gradle
         run: ./gradlew build
 
-      - name: Upload to GitHub Release
-        # 仅在推送 tag 时执行
-        if: startsWith(github.ref, 'refs/tags/')
+      # 无条件上传构建产物（dev 版本在此下载）
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mod-jars-${{ steps.version.outputs.mod_version }}
+          path: build/libs/*.jar
+          retention-days: 7    # dev 产物保留 7 天，可自行调整
+
+      # 仅当是 tag 且版本号不含 'dev' 时，发布正式 Release
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/') && !contains(steps.version.outputs.mod_version, 'dev')
         uses: softprops/action-gh-release@v2
         with:
           files: build/libs/*.jar
-          generate_release_notes: true   # 自动生成发布说明
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

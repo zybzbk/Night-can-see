@@ -29,9 +29,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-        - run: find /usr/bin/bash -name "*.jar"
-
         - name: 发布文件
           uses: actions/upload-artifact@v7
           with:
             path: /build/libs/
+
+        - run: cd /build/libs
+               ls

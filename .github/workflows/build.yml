@@ -15,7 +15,7 @@ jobs:
 
       - name: 同步
         uses: gradle/actions/setup-gradle@v4
-  
+      - run: ls
       - name: 给权限
         run: chmod +x ./gradlew
 

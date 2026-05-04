@@ -1,0 +1,95 @@
+# 这是一个 neoforge.mods.toml 文件示例。它包含与加载模组相关的数据。
+# 有几个必填字段 (#mandatory)，还有更多可选字段 (#optional)。
+# 整体格式为标准TOML格式，v0.5.0。
+# 请注意，此文件中有几个 TOML 列表。
+# 在此处查找有关 toml 格式的更多信息：https://github.com/toml-lang/toml
+
+# 要加载的 mod 加载器类型的名称 - 对于常规 FML @Mod mods，它应该是 javafml
+modLoader="javafml" #mandatory
+
+# 与所述 mod 加载器匹配的版本范围 - 对于常规 FML @Mod 它将是 FML 版本。目前是 2。
+loaderVersion="${loader_version_range}" #mandatory
+
+#你的模组的许可证。这是强制性元数据，可以更轻松地理解您的再分配属性。
+# 在 https://choosealicense.com/ 上查看您的选项。保留所有权利是默认的版权立场，因此也是此处的默认立场。
+license="${mod_license}"
+
+# 当此 mod 出现问题时，用于向人们提供参考的 URL
+#issueTrackerURL="https://change.me.to.your.issue.tracker.example.invalid/" #可选
+
+# mod 列表 - 这里允许的数量由各个 mod 加载器决定
+[[mods]] #强制的
+
+# mod的modid
+modId="${mod_id}" #强制的
+
+# mod的版本号
+version="${mod_version}" #强制的
+
+# 模组的显示名称
+displayName="${mod_name}" #强制的
+
+#用于查询此 mod 更新的 URL。请参阅 JSON 更新规范 https://docs.neoforged.net/docs/misc/updatechecker/
+#updateJSONURL="https://change.me.example.invalid/updates.json" #可选
+
+# 该模组“主页”的 URL，显示在模组 UI 中
+#displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #可选
+
+# 包含显示徽标的文件名（位于 mod JAR 的根目录中）
+#logoFile="examplemod.png" #可选
+
+# mod UI 中显示的文本字段
+#credits="" #可选
+
+# mod的作者，显示在mod UI中（可选）
+authors="新用户"
+
+# mod 的描述文本（多行！）（#mandatory）
+description='''
+这是一个添加了夜视附魔的模组
+'''
+
+# [[mixins]] 块允许您将 mixin 配置声明为 FML，以便加载它。
+#[[混合]]
+#config="${mod_id}.mixins.json"
+
+# [[accessTransformers]] 块允许您声明 AT 文件的位置。
+# 如果省略此块，将尝试从 META-INF/accesstransformer.cfg 加载 AT
+#[[访问变压器]]
+#file="META-INF/accesstransformer.cfg"
+
+# coremods 配置文件路径不可配置，始终从 META-INF/coremods.json 加载
+
+# 依赖项 - 使用 .指示特定 modid 的依赖性。依赖项是可选的。
+[[dependencies.${mod_id}]] #optional
+    # the modid of the dependency
+    modId="neoforge" #mandatory
+    # The type of the dependency. Can be one of "required", "optional", "incompatible" or "discouraged" (case insensitive).
+    # 'required' requires the mod to exist, 'optional' does not
+    # 'incompatible' will prevent the game from loading when the mod exists, and 'discouraged' will show a warning
+    type="required" #mandatory
+    # Optional field describing why the dependency is required or why it is incompatible
+    # reason="..."
+    # The version range of the dependency
+    versionRange="[${neo_version},)" #mandatory
+    # An ordering relationship for the dependency.
+    # BEFORE - This mod is loaded BEFORE the dependency
+    # AFTER - This mod is loaded AFTER the dependency
+    ordering="NONE"
+    # Side this dependency is applied on - BOTH, CLIENT, or SERVER
+    side="BOTH"
+
+# Here's another dependency
+[[dependencies.${mod_id}]]
+    modId="minecraft"
+    type="required"
+    # This version range declares a minimum of the current minecraft version up to but not including the next major version
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+# Features are specific properties of the game environment, that you may want to declare you require. This example declares
+# that your mod requires GL version 3.2 or higher. Other features will be added. They are side aware so declaring this won't
+# stop your mod loading on the server for example.
+#[features.${mod_id}]
+#openGLVersion="[3.2,)"

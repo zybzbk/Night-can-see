@@ -19,9 +19,6 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 @EventBusSubscriber(modid = Nightcansee.MODID, value = Dist.CLIENT)
 public class NightcanseeClient {
     public NightcanseeClient(IEventBus eventBus) {
-        // 允许 NeoForge 为该 mod 的配置创建一个配置屏幕。
-        // 通过转到 Mod 屏幕 > 单击您的 mod > 单击 config 来访问配置屏幕。
-        // 不要忘记将配置选项的翻译添加到 en_us.json 文件中。
         Nightcansee.ITEMS.register(eventBus);
         Nightcansee.CREATIVE_MODE_TABS.register(eventBus);//把物品和物品栏弄到主线程注册
 

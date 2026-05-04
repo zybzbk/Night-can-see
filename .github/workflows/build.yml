@@ -25,9 +25,11 @@ jobs:
 
       - name: 构建     
         run: ./gradlew build
-  deloy:      
-        name: 发布文件
-        uses: actions/upload-artifact@v7
-        with:
-          name: nightcansee
-          path: /home/runner/work/Night-can-see/Night-can-seessss/build/libs/nightcansee-1.0.0.jar
+  deloy: 
+    runs-on: ubuntu-latest
+    steps:
+        - name: 发布文件
+          uses: actions/upload-artifact@v7
+          with:
+            name: nightcansee
+            path: /home/runner/work/Night-can-see/Night-can-seessss/build/libs/nightcansee-1.0.0.jar

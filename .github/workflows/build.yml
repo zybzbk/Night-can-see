@@ -37,4 +37,4 @@ jobs:
           uses: actions/upload-artifact@v7
           with:
             name: nightcansee
-            path: /home/runner/work/Night-can-see/Night-can-seessss/build/libs/nightcansee-1.0.0.jar
+            path: ./build/libs/nightcansee-1.0.0.jar

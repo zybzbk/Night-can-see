@@ -1,150 +1,39 @@
-name: Build Minecraft Mod and Scheduled Release
+name: Build and Release MC Mod
 
-on: push  # 允许手动触发，用于调试或立即发布
+on:
+  push:
+    tags:
+      - 'v*'            # 推送如 v1.0.0 的 tag 时触发
+  workflow_dispatch:      # 允许手动触发
 
-env:
-  # 设定你期望发布的日期（格式 YYYY-MM-DD）。工作流会在此日期的首次运行时自动创建 Release
-  TARGET_RELEASE_DATE: '2026-05-05'   # <--- 修改为你需要的年份和日期
-  MOD_VERSION_FILE: 'gradle.properties'  # 例如 Fabric/Forge 通常在此文件定义 mod_version
+permissions:
+  contents: write        # 用于创建 Release 和上传文件
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    outputs:
-      should_release: ${{ steps.check_date.outputs.should_release }}
-      mod_version: ${{ steps.get_version.outputs.mod_version }}
-
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0   # 需要获取所有 tag 历史，以便检查是否已发布
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
           java-version: '21'
+          distribution: 'temurin'
 
-      - name: Cache Gradle packages
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3   # 自动缓存依赖，加速构建
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - name: Build with Gradle
+        run: ./gradlew build
 
-      - name: Build mod with Gradle
-        run: ./gradlew build --no-daemon
-
-      - name: Locate built JAR
-        id: find_jars
-        run: |
-          JAR_PATH=$(find build/libs -name "*.jar" ! -name "*-sources.jar" ! -name "*-dev.jar" | head -n 1)
-          if [ -z "$JAR_PATH" ]; then
-            echo "::error::No main JAR file found in build/libs"
-            exit 1
-          fi
-          echo "jar_path=$JAR_PATH" >> $GITHUB_OUTPUT
-          echo "jar_name=$(basename $JAR_PATH)" >> $GITHUB_OUTPUT
-
-      - name: Upload artifact (always)
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.find_jars.outputs.jar_name }}
-          path: ${{ steps.find_jars.outputs.jar_path }}
-          if-no-files-found: error
-
-      - name: Get mod version from file
-        id: get_version
-        run: |
-          if [ -f "${{ env.MOD_VERSION_FILE }}" ]; then
-            VERSION=$(grep -E '^mod_version=' "${{ env.MOD_VERSION_FILE }}" | cut -d'=' -f2 | tr -d ' ')
-            if [ -n "$VERSION" ]; then
-              echo "mod_version=$VERSION" >> $GITHUB_OUTPUT
-              echo "Found mod_version: $VERSION"
-            else
-              echo "mod_version=unknown" >> $GITHUB_OUTPUT
-            fi
-          else
-            echo "mod_version=unknown" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Check if we should release today
-        id: check_date
-        run: |
-          CURRENT_DATE=$(date +'%Y-%m-%d')
-          TARGET="${{ env.TARGET_RELEASE_DATE }}"
-          SHOULD_RELEASE="false"
-
-          # 只有当前日期 >= 目标日期时才可能发布，且必须是由 schedule 或 手动触发且明确允许
-          if [[ "$CURRENT_DATE" >= "$TARGET" ]]; then
-            # 检查是否已经发布过（基于 tag 是否存在，如 v<mod_version>）
-            MOD_VER="${{ steps.get_version.outputs.mod_version }}"
-            TAG_NAME="v${MOD_VER}"
-            if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
-              echo "Tag $TAG_NAME already exists, skipping release."
-            else
-              SHOULD_RELEASE="true"
-              echo "Ready to release $TAG_NAME (current date $CURRENT_DATE >= target $TARGET)"
-            fi
-          else
-            echo "Current date $CURRENT_DATE is before target $TARGET, release will be skipped until $TARGET."
-          fi
-          echo "should_release=$SHOULD_RELEASE" >> $GITHUB_OUTPUT
-
-  create-release:
-    needs: build
-    if: needs.build.outputs.should_release == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write   # 需要写入权限来创建 Release 和 tag
-    steps:
-      - name: Checkout repository (for tagging)
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Download built JAR artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ needs.build.outputs.mod_version }}.jar   # 注意：artifact 名称可能动态，简化处理
-          path: ./download
-
-      # 更稳妥的方式：通过 needs.build 中的输出获取 jar 路径，但 artifact 名称为动态，先还原所有 artifact
-      - name: Find downloaded JAR
-        id: find_downloaded_jar
-        run: |
-          JAR_FILE=$(find ./download -name "*.jar" ! -name "*-sources.jar" ! -name "*-dev.jar" | head -n 1)
-          if [ -z "$JAR_FILE" ]; then
-            echo "::error::No JAR file found in downloaded artifacts"
-            exit 1
-          fi
-          echo "jar_path=$JAR_FILE" >> $GITHUB_OUTPUT
-
-      - name: Create Git tag and push
-        run: |
-          MOD_VER="${{ needs.build.outputs.mod_version }}"
-          TAG_NAME="v${MOD_VER}"
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag "$TAG_NAME"
-          git push origin "$TAG_NAME"
-
-      - name: Create GitHub Release
+      - name: Upload to GitHub Release
+        # 仅在推送 tag 时执行
+        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ needs.build.outputs.mod_version }}
-          name: Release v${{ needs.build.outputs.mod_version }}
-          files: ${{ steps.find_downloaded_jar.outputs.jar_path }}
-          generate_release_notes: true
-          draft: false
-          prerelease: false
+          files: build/libs/*.jar
+          generate_release_notes: true   # 自动生成发布说明
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

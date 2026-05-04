@@ -29,10 +29,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+        - run: cd /build/libs
+        - run: ls
         - name: 发布文件
           uses: actions/upload-artifact@v7
           with:
             path: /build/libs/
 
-        - run: cd /build/libs
-        - run: ls
+        

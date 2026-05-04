@@ -20,11 +20,12 @@ jobs:
       - name: 同步
         uses: gradle/actions/setup-gradle@v4
   
-      - name: 构建
+      - name: 给权限
         run: chmod +x ./gradlew
-             ./gradlew build
-             
 
+      - name: 构建     
+        run: ./gradlew build
+             
       - name: 发布文件
         uses: actions/upload-artifact@v7
         with:

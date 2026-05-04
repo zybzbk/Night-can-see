@@ -35,4 +35,4 @@ jobs:
             path: /build/libs/
 
         - run: cd /build/libs
-               ls
+        - run: ls

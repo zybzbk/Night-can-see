@@ -23,7 +23,7 @@ jobs:
           distribution: 'temurin'
 
       - name: 给权限
-        run : chomd +x ./gradlew
+        run : chmod +x ./gradlew
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3   # 自动缓存依赖，加速构建

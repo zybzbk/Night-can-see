@@ -8,7 +8,7 @@ import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 public class Log {
     @SubscribeEvent
     public static void MODLoadCompleteEvent(FMLLoadCompleteEvent event) {
-        Nightcansee.LOGGER.info("欢迎使用我的模组，祝你今天开心");//日志
+        Nightcansee.LOGGER.info("欢迎使用我的模组，祝你今天玩的愉快");//日志
     }
 
 

@@ -20,11 +20,17 @@ public class Nightcansee {
     //首先注册一个物品
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Nightcansee.MODID);
 
+    public static final Supplier<Item> YE_SHI = ITEMS.register(
+            "yeshi",
+            () -> new Item(new Item.Properties())
+    );
+
     public static final Supplier<Item> MAGIC_BOOK = ITEMS.register(
             "magic_book",
-            () -> new ArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.HELMET,
-                    (new Item.Properties()).durability(ArmorItem.Type.HELMET.getDurability(5)))
-    );
+            () -> new ArmorItem(kuijia.YE_SHI, ArmorItem.Type.HELMET,
+                    (new Item.Properties())
+                            .durability(ArmorItem.Type.HELMET.getDurability(5))));
+
 
 
     //然后再添加一个创造物品栏
@@ -39,5 +45,6 @@ public class Nightcansee {
                     .title(Component.translatable("itemGroup.my_tab"))
                     .displayItems((params, output) -> {
                         output.accept(Nightcansee.MAGIC_BOOK.get());
+                        output.accept(Nightcansee.YE_SHI.get());
                     }).build());
 }

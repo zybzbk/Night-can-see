@@ -17,7 +17,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class kuijia {
+public class Armor {
 
     public static final Holder<ArmorMaterial> YE_SHI = register("ye_shi", (EnumMap) Util.make(new EnumMap(ArmorItem.Type.class), (map) -> {
         map.put(ArmorItem.Type.BOOTS, 3);

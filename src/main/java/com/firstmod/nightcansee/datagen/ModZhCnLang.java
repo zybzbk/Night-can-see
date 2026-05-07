@@ -1,5 +1,6 @@
 package com.firstmod.nightcansee.datagen;
 
+import com.firstmod.nightcansee.ModBlock;
 import com.firstmod.nightcansee.Nightcansee;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.LanguageProvider;
@@ -12,7 +13,8 @@ public class ModZhCnLang extends LanguageProvider {
     @Override
     protected void addTranslations() {
         add(Nightcansee.MAGIC_BOOK.get(), "夜视仪");
-        add(Nightcansee.YE_SHI.get(), "ye shi");
+        add(Nightcansee.YE_SHI.get(), "夜石");
+        add(ModBlock.YE_SHI_BLOCK.get(),"夜石块");
 
         add("itemGroup.my_tab","夜视模组");
     }

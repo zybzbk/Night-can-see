@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "nightcansee:ye_shi"
+    },
+    "X": {
+      "item": "minecraft:green_stained_glass_pane"
+    }
+  },
+  "pattern": [
+    "###",
+    "X#X",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "nightcansee:magic_book"
+  }
+}

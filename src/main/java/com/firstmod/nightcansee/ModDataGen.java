@@ -2,6 +2,7 @@ package com.firstmod.nightcansee;
 
 import com.firstmod.nightcansee.datagen.ModModels;
 import com.firstmod.nightcansee.datagen.ModZhCnLang;
+import com.firstmod.nightcansee.datagen.Modrecipe;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
@@ -24,5 +25,6 @@ public class ModDataGen {
 
         gen.addProvider(event.includeClient(), new ModModels(packOutput, existingFileHelper));
         gen.addProvider(event.includeClient(), new ModZhCnLang(packOutput));
+        gen.addProvider(event.includeClient(),new Modrecipe(packOutput,lookupproviner));
     }
 }

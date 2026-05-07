@@ -21,7 +21,7 @@ public class NightcanseeClient {
     public NightcanseeClient(IEventBus eventBus) {
         Nightcansee.ITEMS.register(eventBus);
         Nightcansee.CREATIVE_MODE_TABS.register(eventBus);//把物品和物品栏弄到主线程注册
-
+        ModBlock.BLOCKS.register(eventBus);
     }
 
     @SubscribeEvent
@@ -30,8 +30,8 @@ public class NightcanseeClient {
 
         ItemStack helmet = player.getItemBySlot(EquipmentSlot.HEAD);
         if (helmet.getItem() == Nightcansee.MAGIC_BOOK.get()) {
-            //检测是否带上该物品，若为真则带上则基于一个无限的夜视效果，否则去除
-            player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, -1, 0,true, false));
+            //检测是否带上该物品，若为真则带上夜视效果，否则去除
+            player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 220, 0,true, false,false));
         }else {
             player.removeEffect(MobEffects.NIGHT_VISION);
         }

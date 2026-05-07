@@ -17,23 +17,21 @@ public class Nightcansee {
     public static final String MODID = "nightcansee";
     // 直接引用 slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
-    //首先注册一个物品
+    //注册物品
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Nightcansee.MODID);
 
     public static final Supplier<Item> YE_SHI = ITEMS.register(
-            "yeshi",
+            "ye_shi",
             () -> new Item(new Item.Properties())
     );
-
+    //注册物品
     public static final Supplier<Item> MAGIC_BOOK = ITEMS.register(
             "magic_book",
-            () -> new ArmorItem(kuijia.YE_SHI, ArmorItem.Type.HELMET,
+            () -> new ArmorItem(Armor.YE_SHI, ArmorItem.Type.HELMET,
                     (new Item.Properties())
                             .durability(ArmorItem.Type.HELMET.getDurability(5))));
 
-
-
-    //然后再添加一个创造物品栏
+    //添加一个创造物品栏
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
             DeferredRegister.create(
                     Registries.CREATIVE_MODE_TAB,
@@ -46,5 +44,6 @@ public class Nightcansee {
                     .displayItems((params, output) -> {
                         output.accept(Nightcansee.MAGIC_BOOK.get());
                         output.accept(Nightcansee.YE_SHI.get());
+                        output.accept(ModBlock.YE_SHI_BLOCK.get());
                     }).build());
 }

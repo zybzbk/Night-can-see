@@ -13,6 +13,7 @@ public class ModModels extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
+        basicItem(Nightcansee.YE_SHI.get());
         basicItem(Nightcansee.MAGIC_BOOK.get());
     }
 }

@@ -1,5 +1,6 @@
 package com.firstmod.nightcansee;
 
+import com.firstmod.nightcansee.datagen.ModBlockStates;
 import com.firstmod.nightcansee.datagen.ModModels;
 import com.firstmod.nightcansee.datagen.ModZhCnLang;
 import com.firstmod.nightcansee.datagen.Modrecipe;
@@ -26,5 +27,6 @@ public class ModDataGen {
         gen.addProvider(event.includeClient(), new ModModels(packOutput, existingFileHelper));
         gen.addProvider(event.includeClient(), new ModZhCnLang(packOutput));
         gen.addProvider(event.includeClient(),new Modrecipe(packOutput,lookupproviner));
+        gen.addProvider(event.includeClient(), new ModBlockStates(packOutput, existingFileHelper));
     }
 }
